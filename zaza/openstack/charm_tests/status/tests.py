@@ -35,3 +35,16 @@ class ProposedPackageReport(test_utils.OpenStackBaseTest):
                         proposed.append(pkg)
             logging.info("\n\nProposed packages installed on {}:\n{}".format(
                 unit.entity_id, "\n".join(proposed)))
+
+
+class PPAPackageReport(test_utils.OpenStackBaseTest):
+    """PPA packages report status test class."""
+
+    def test_100_report_ppa_packages(self):
+        """Report PPA packages installed on each unit."""
+        cmd = "apt list '?narrow(?installed,?origin(LP-PPA.*))'"
+        for application in zaza.model.get_status().applications:
+            for unit in zaza.model.get_units(application):
+                installed = zaza.model.run_on_unit(unit.entity_id, cmd)
+            logging.info("\n\nPPA packages installed on {}:\n{}".format(
+                unit.entity_id, installed['Stdout']))
